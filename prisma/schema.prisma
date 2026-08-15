@@ -1,0 +1,260 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model categorias_voluntario {
+  id          Int           @id @default(autoincrement())
+  descripcion String?       @unique @db.VarChar(150)
+  activo      Boolean?
+  voluntarios voluntarios[]
+}
+
+model centros_acopio {
+  id                                                        Int                      @id @default(autoincrement())
+  descripcion                                               String?                  @db.VarChar(200)
+  direccion                                                 String?                  @db.VarChar(300)
+  telefono                                                  String?                  @db.VarChar(50)
+  observacion                                               String?
+  responsable_id                                            Int?
+  foto_url                                                  String?
+  latitud                                                   Decimal?                 @db.Decimal(10, 7)
+  longitud                                                  Decimal?                 @db.Decimal(10, 7)
+  activo                                                    Boolean?
+  created_at                                                DateTime?                @db.Timestamp(6)
+  updated_at                                                DateTime?                @db.Timestamp(6)
+  voluntarios                                               voluntarios?             @relation(fields: [responsable_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  encomiendas_encomiendas_centro_destino_idTocentros_acopio encomiendas[]            @relation("encomiendas_centro_destino_idTocentros_acopio")
+  encomiendas_encomiendas_centro_origen_idTocentros_acopio  encomiendas[]            @relation("encomiendas_centro_origen_idTocentros_acopio")
+  inventario_centro                                         inventario_centro[]
+  movimientos_inventario                                    movimientos_inventario[]
+  necesidades                                               necesidades[]
+  transportes_transportes_centro_destino_idTocentros_acopio transportes[]            @relation("transportes_centro_destino_idTocentros_acopio")
+  transportes_transportes_centro_salida_idTocentros_acopio  transportes[]            @relation("transportes_centro_salida_idTocentros_acopio")
+  voluntario_centro                                         voluntario_centro[]
+}
+
+model encomiendas {
+  id                                                           BigInt          @id @default(autoincrement())
+  centro_destino_id                                            Int?
+  centro_origen_id                                             Int?
+  voluntario_origen_id                                         Int?
+  asignado_a                                                   Int?
+  descripcion                                                  String?
+  direccion_recogida                                           String?         @db.VarChar(300)
+  estado                                                       String?         @db.VarChar(50)
+  fecha_creacion                                               DateTime?       @db.Timestamp(6)
+  fecha_asignacion                                             DateTime?       @db.Timestamp(6)
+  fecha_entrega                                                DateTime?       @db.Timestamp(6)
+  observacion                                                  String?
+  created_at                                                   DateTime?       @db.Timestamp(6)
+  updated_at                                                   DateTime?       @db.Timestamp(6)
+  voluntarios_encomiendas_asignado_aTovoluntarios              voluntarios?    @relation("encomiendas_asignado_aTovoluntarios", fields: [asignado_a], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  centros_acopio_encomiendas_centro_destino_idTocentros_acopio centros_acopio? @relation("encomiendas_centro_destino_idTocentros_acopio", fields: [centro_destino_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  centros_acopio_encomiendas_centro_origen_idTocentros_acopio  centros_acopio? @relation("encomiendas_centro_origen_idTocentros_acopio", fields: [centro_origen_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  voluntarios_encomiendas_voluntario_origen_idTovoluntarios    voluntarios?    @relation("encomiendas_voluntario_origen_idTovoluntarios", fields: [voluntario_origen_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model franjas_horarias {
+  id          Int           @id @default(autoincrement())
+  descripcion String?       @unique @db.VarChar(100)
+  activo      Boolean?
+  voluntarios voluntarios[]
+}
+
+model inventario_centro {
+  id                 Int               @id @default(autoincrement())
+  centro_id          Int?
+  tipo_inventario_id Int?
+  cantidad           Decimal?          @db.Decimal(15, 3)
+  updated_at         DateTime?         @db.Timestamp(6)
+  centros_acopio     centros_acopio?   @relation(fields: [centro_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tipos_inventario   tipos_inventario? @relation(fields: [tipo_inventario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([centro_id, tipo_inventario_id])
+}
+
+model movimientos_inventario {
+  id                 BigInt            @id @default(autoincrement())
+  centro_id          Int?
+  tipo_inventario_id Int?
+  tipo_movimiento    String?           @db.VarChar(50)
+  cantidad           Decimal?          @db.Decimal(15, 3)
+  transporte_id      BigInt?
+  observacion        String?
+  created_at         DateTime?         @db.Timestamp(6)
+  centros_acopio     centros_acopio?   @relation(fields: [centro_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tipos_inventario   tipos_inventario? @relation(fields: [tipo_inventario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  transportes        transportes?      @relation(fields: [transporte_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model necesidades {
+  id                  Int               @id @default(autoincrement())
+  centro_id           Int?
+  tipo_inventario_id  Int?
+  cantidad_solicitada Decimal?          @db.Decimal(15, 3)
+  cantidad_atendida   Decimal?          @db.Decimal(15, 3)
+  prioridad           String?           @db.VarChar(50)
+  estado              String?           @db.VarChar(50)
+  observacion         String?
+  created_at          DateTime?         @db.Timestamp(6)
+  updated_at          DateTime?         @db.Timestamp(6)
+  centros_acopio      centros_acopio?   @relation(fields: [centro_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tipos_inventario    tipos_inventario? @relation(fields: [tipo_inventario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model permisos {
+  id           Int            @id @default(autoincrement())
+  nombre       String?        @unique @db.VarChar(100)
+  descripcion  String?
+  activo       Boolean?
+  created_at   DateTime?      @db.Timestamp(6)
+  updated_at   DateTime?      @db.Timestamp(6)
+  rol_permisos rol_permisos[]
+}
+
+model rol_permisos {
+  id         BigInt    @id @default(autoincrement())
+  rol_id     Int?
+  permiso_id Int?
+  permisos   permisos? @relation(fields: [permiso_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  roles      roles?    @relation(fields: [rol_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([rol_id, permiso_id])
+}
+
+model roles {
+  id           Int            @id @default(autoincrement())
+  nombre       String?        @unique @db.VarChar(100)
+  activo       Boolean?
+  created_at   DateTime?      @db.Timestamp(6)
+  updated_at   DateTime?      @db.Timestamp(6)
+  rol_permisos rol_permisos[]
+  usuarios     usuarios[]
+}
+
+model tipos_inventario {
+  id                     Int                      @id @default(autoincrement())
+  nombre                 String?                  @unique @db.VarChar(150)
+  unidad_medida          String?                  @db.VarChar(50)
+  activo                 Boolean?
+  created_at             DateTime?                @db.Timestamp(6)
+  updated_at             DateTime?                @db.Timestamp(6)
+  inventario_centro      inventario_centro[]
+  movimientos_inventario movimientos_inventario[]
+  necesidades            necesidades[]
+  transporte_detalle     transporte_detalle[]
+}
+
+model tipos_vehiculo {
+  id          Int         @id @default(autoincrement())
+  descripcion String?     @unique @db.VarChar(100)
+  activo      Boolean?
+  vehiculos   vehiculos[]
+}
+
+model tipos_voluntario {
+  id          Int           @id @default(autoincrement())
+  descripcion String?       @unique @db.VarChar(100)
+  activo      Boolean?
+  voluntarios voluntarios[]
+}
+
+model transporte_detalle {
+  id                 BigInt            @id @default(autoincrement())
+  transporte_id      BigInt?
+  tipo_inventario_id Int?
+  cantidad           Decimal?          @db.Decimal(15, 3)
+  tipos_inventario   tipos_inventario? @relation(fields: [tipo_inventario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  transportes        transportes?      @relation(fields: [transporte_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([transporte_id, tipo_inventario_id])
+}
+
+model transportes {
+  id                                                           BigInt                   @id @default(autoincrement())
+  centro_salida_id                                             Int?
+  centro_destino_id                                            Int?
+  vehiculo_id                                                  Int?
+  conductor_id                                                 Int?
+  fecha_salida                                                 DateTime?                @db.Timestamp(6)
+  fecha_llegada                                                DateTime?                @db.Timestamp(6)
+  estado                                                       String?                  @db.VarChar(50)
+  observacion                                                  String?
+  created_at                                                   DateTime?                @db.Timestamp(6)
+  updated_at                                                   DateTime?                @db.Timestamp(6)
+  movimientos_inventario                                       movimientos_inventario[]
+  transporte_detalle                                           transporte_detalle[]
+  centros_acopio_transportes_centro_destino_idTocentros_acopio centros_acopio?          @relation("transportes_centro_destino_idTocentros_acopio", fields: [centro_destino_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  centros_acopio_transportes_centro_salida_idTocentros_acopio  centros_acopio?          @relation("transportes_centro_salida_idTocentros_acopio", fields: [centro_salida_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  voluntarios                                                  voluntarios?             @relation(fields: [conductor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vehiculos                                                    vehiculos?               @relation(fields: [vehiculo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model usuarios {
+  id            Int          @id @default(autoincrement())
+  email         String?      @unique @db.VarChar(255)
+  password_hash String?
+  rol_id        Int?
+  activo        Boolean?
+  created_at    DateTime?    @db.Timestamp(6)
+  updated_at    DateTime?    @db.Timestamp(6)
+  roles         roles?       @relation(fields: [rol_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  voluntarios   voluntarios?
+}
+
+model vehiculos {
+  id               Int             @id @default(autoincrement())
+  tipo_vehiculo_id Int?
+  placa            String?         @unique @db.VarChar(20)
+  pasajeros        Int?
+  capacidad_carga  Decimal?        @db.Decimal(15, 3)
+  unidad_carga     String?         @db.VarChar(50)
+  activo           Boolean?
+  created_at       DateTime?       @db.Timestamp(6)
+  updated_at       DateTime?       @db.Timestamp(6)
+  transportes      transportes[]
+  tipos_vehiculo   tipos_vehiculo? @relation(fields: [tipo_vehiculo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model voluntario_centro {
+  id             Int             @id @default(autoincrement())
+  voluntario_id  Int?
+  centro_id      Int?
+  fecha_inicio   DateTime?       @db.Date
+  fecha_fin      DateTime?       @db.Date
+  activo         Boolean?
+  centros_acopio centros_acopio? @relation(fields: [centro_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  voluntarios    voluntarios?    @relation(fields: [voluntario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model voluntarios {
+  id                                                        Int                    @id @default(autoincrement())
+  nombre                                                    String?                @db.VarChar(200)
+  telefono                                                  String?                @db.VarChar(50)
+  correo                                                    String?                @db.VarChar(255)
+  usuario_id                                                Int?                   @unique
+  tipo_voluntario_id                                        Int?
+  categoria_id                                              Int?
+  franja_horaria_id                                         Int?
+  se_mueve_por                                              String?                @db.VarChar(100)
+  disponible                                                Boolean?
+  activo                                                    Boolean?
+  observacion                                               String?
+  created_at                                                DateTime?              @db.Timestamp(6)
+  updated_at                                                DateTime?              @db.Timestamp(6)
+  centros_acopio                                            centros_acopio[]
+  encomiendas_encomiendas_asignado_aTovoluntarios           encomiendas[]          @relation("encomiendas_asignado_aTovoluntarios")
+  encomiendas_encomiendas_voluntario_origen_idTovoluntarios encomiendas[]          @relation("encomiendas_voluntario_origen_idTovoluntarios")
+  transportes                                               transportes[]
+  voluntario_centro                                         voluntario_centro[]
+  categorias_voluntario                                     categorias_voluntario? @relation(fields: [categoria_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  franjas_horarias                                          franjas_horarias?      @relation(fields: [franja_horaria_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tipos_voluntario                                          tipos_voluntario?      @relation(fields: [tipo_voluntario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuarios                                                  usuarios?              @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
