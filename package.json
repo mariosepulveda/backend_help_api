@@ -11,7 +11,12 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio"
   },
-  "keywords": ["node","express", "prisma","postgres"],
+  "keywords": [
+    "node",
+    "express",
+    "prisma",
+    "postgres"
+  ],
   "author": "mariosr511@hotmail.com",
   "license": "ISC",
   "dependencies": {
