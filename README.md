@@ -1,7 +1,7 @@
 # backend_help_api
 Nodejs, express, prisma
 
-
+-- edscarga los cambios de la bd (nuevas tablas, modificaciones en columnas etc)
 npx prisma db pull
 
 iniciar prisma
