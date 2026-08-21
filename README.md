@@ -10,3 +10,6 @@ iniciar prisma
 
 generar cliente de prisma
 -- npx prisma generate
+
+generar crud 
+-- npm run crud -- voluntario_centro
