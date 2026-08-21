@@ -6,6 +6,7 @@ const tipos_vehiculoRoutes = require('./tipos_vehiculo.routes');
 const categorias_voluntarioRoutes = require('./categorias_voluntario.routes');
 const centros_acopioRoutes = require('./centros_acopio.routes');
 const encomiendasRoutes = require('./encomiendas.routes');
+const franjas_horariasRoutes = require('./franjas_horarias.routes');
 
 const router = express.Router();
 
@@ -17,4 +18,5 @@ router.use('/tipos_vehiculo', tipos_vehiculoRoutes);
 router.use('/categorias_voluntario', categorias_voluntarioRoutes);
 router.use('/centros_acopio', centros_acopioRoutes);
 router.use('/encomiendas', encomiendasRoutes);
+router.use('/franjas_horarias', franjas_horariasRoutes);
 module.exports = router;
