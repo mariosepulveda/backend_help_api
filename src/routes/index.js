@@ -17,6 +17,7 @@ const tipos_inventarioRoutes = require('./tipos_inventario.routes');
 const tipos_voluntarioRoutes = require('./tipos_voluntario.routes');
 const transporte_detalleRoutes = require('./transporte_detalle.routes');
 const transportesRoutes = require('./transportes.routes');
+const usuariosRoutes = require('./usuarios.routes');
 
 const router = express.Router();
 
@@ -39,4 +40,5 @@ router.use('/tipos_inventario', tipos_inventarioRoutes);
 router.use('/tipos_voluntario', tipos_voluntarioRoutes);
 router.use('/transporte_detalle', transporte_detalleRoutes);
 router.use('/transportes', transportesRoutes);
+router.use('/usuarios', usuariosRoutes);
 module.exports = router;
