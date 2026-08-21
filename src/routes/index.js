@@ -8,6 +8,7 @@ const centros_acopioRoutes = require('./centros_acopio.routes');
 const encomiendasRoutes = require('./encomiendas.routes');
 const franjas_horariasRoutes = require('./franjas_horarias.routes');
 const inventario_centroRoutes = require('./inventario_centro.routes');
+const movimientos_inventarioRoutes = require('./movimientos_inventario.routes');
 
 const router = express.Router();
 
@@ -21,4 +22,5 @@ router.use('/centros_acopio', centros_acopioRoutes);
 router.use('/encomiendas', encomiendasRoutes);
 router.use('/franjas_horarias', franjas_horariasRoutes);
 router.use('/inventario_centro', inventario_centroRoutes);
+router.use('/movimientos_inventario', movimientos_inventarioRoutes);
 module.exports = router;
