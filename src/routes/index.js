@@ -11,6 +11,7 @@ const inventario_centroRoutes = require('./inventario_centro.routes');
 const movimientos_inventarioRoutes = require('./movimientos_inventario.routes');
 const necesidadesRoutes = require('./necesidades.routes');
 const permisosRoutes = require('./permisos.routes');
+const rol_permisosRoutes = require('./rol_permisos.routes');
 
 const router = express.Router();
 
@@ -27,4 +28,5 @@ router.use('/inventario_centro', inventario_centroRoutes);
 router.use('/movimientos_inventario', movimientos_inventarioRoutes);
 router.use('/necesidades', necesidadesRoutes);
 router.use('/permisos', permisosRoutes);
+router.use('/rol_permisos', rol_permisosRoutes);
 module.exports = router;
