@@ -166,19 +166,16 @@ function generateService(tableName) {
     const content = `const ${tableName}Repository = require('../repositories/${tableName}.repository');
 
 const getAll = async () => {
-    return ${tableName}Repository.findAll();
+    const result = await ${tableName}Repository.findAll();
+    return result.length > 0 ? { statusCode: 200, message: '${tableName} encontrados', success: true, data: result } : { statusCode: 404, message: 'No se encontraron ${tableName}', success: false, data: [] };
 };
 
 const getById = async (id) => {
     const record = await ${tableName}Repository.findById(id);
 
-    if (!record) {
-        const error = new Error('${tableName} no encontrado');
-        error.statusCode = 404;
-        throw error;
-    }
+    const result = record ? { statusCode:200, message: '${tableName} encontrado', success: true, data: record } : { statusCode: 404, message: '${tableName} no encontrado', success: false, data: [] };
 
-    return record;
+    return result;
 };
 
 const create = async (data) => {
@@ -186,15 +183,28 @@ const create = async (data) => {
 };
 
 const update = async (id, data) => {
-    await getById(id);
+    const result = await getById(id);
+
+    if (result.statusCode === 404) {
+        const error = 'No se encontró el ${tableName}, No se puede actualizar';
+    return { statusCode: 404, message: error, success: false, data: [] };
+    }
 
     return ${tableName}Repository.update(id, data);
 };
 
 const remove = async (id) => {
-    await getById(id);
+    const result = await getById(id);
 
-    return ${tableName}Repository.remove(id);
+    if (result.statusCode === 404) {
+        const error = 'No se encontró el ${tableName}, No se puede eliminar';
+        return { statusCode: 404, message: error, success: false, data: [] };
+    }
+
+    const data = await ${tableName}Repository.remove(id);
+
+    return  { statusCode: 200, message: '${tableName} eliminado correctamente', success: true, data };
+
 };
 
 module.exports = {
@@ -282,11 +292,11 @@ const remove = async (req, res, next) => {
     try {
         const id = Number(req.params.id);
 
-        await ${tableName}Service.remove(id);
+        const data = await ${tableName}Service.remove(id);
 
         res.status(200).json({
             success: true,
-            message: '${tableName} eliminado correctamente'
+            data
         });
     } catch (error) {
         next(error);

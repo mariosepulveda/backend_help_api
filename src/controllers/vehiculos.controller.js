@@ -63,11 +63,11 @@ const remove = async (req, res, next) => {
     try {
         const id = Number(req.params.id);
 
-        await vehiculosService.remove(id);
+        const data = await vehiculosService.remove(id);
 
         res.status(200).json({
             success: true,
-            message: 'vehiculos eliminado correctamente'
+            data
         });
     } catch (error) {
         next(error);
