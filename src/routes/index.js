@@ -12,6 +12,7 @@ const movimientos_inventarioRoutes = require('./movimientos_inventario.routes');
 const necesidadesRoutes = require('./necesidades.routes');
 const permisosRoutes = require('./permisos.routes');
 const rol_permisosRoutes = require('./rol_permisos.routes');
+const rolesRoutes = require('./roles.routes');
 
 const router = express.Router();
 
@@ -29,4 +30,5 @@ router.use('/movimientos_inventario', movimientos_inventarioRoutes);
 router.use('/necesidades', necesidadesRoutes);
 router.use('/permisos', permisosRoutes);
 router.use('/rol_permisos', rol_permisosRoutes);
+router.use('/roles', rolesRoutes);
 module.exports = router;
